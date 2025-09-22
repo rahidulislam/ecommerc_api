@@ -1,0 +1,59 @@
+# Python bytecode
+__pycache__/*.py[cod]*$py.class
+
+# Virtual environments
+.env
+.venv/venv/env/ENV/env.bak/venv.bak/.python-version
+venv/
+
+# Django related
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+
+# Static and media files
+/static//media/# Migrations (keep __init__.py though)
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Unit test / coverage
+htmlcov/.tox/.nox/.coverage
+coverage.*.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/.pytest_cache/# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Build / packaging
+build/dist/*.egg-info/.eggs/*.egg
+MANIFEST
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Celery
+celerybeat-schedule
+
+# Editor/IDE files
+.vscode/.idea/*.sublime-project
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.bak
+*.swp
+*.tmp
+~$*# Poetry / Pipenv
+Pipfile.lock
+poetry.lock
+poetry.toml
