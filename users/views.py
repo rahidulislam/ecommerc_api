@@ -20,7 +20,7 @@ class CustomerRegistrationViewSet(ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {"message": "User registered successfully."},
+                {"details": "User registered successfully.", "data": serializer.data},
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -6,5 +6,5 @@ from .views import CustomerRegistrationViewSet
 router = DefaultRouter()
 router.register(r'register', CustomerRegistrationViewSet, basename='register')
 urlpatterns = [
-    path('register/', include(router.urls)),
+    path('', include(router.urls)),
 ]
