@@ -55,8 +55,8 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.facebook",
 ]
 LOCAL_APPS = [
-    "users", 
-    "core", 
+    "users",
+    "core",
     "product",
 ]
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
