@@ -13,14 +13,14 @@ class UserManager(BaseUserManager):
 
     def create_customer(self,email,password,**extra_fields):
         """Create a patient with email and password"""
-        customer_role = importlib.import_module('user_account.models').User.Role.CUSTOMER
+        customer_role = importlib.import_module('users.models').User.Role.CUSTOMER
         extra_fields.setdefault('role',customer_role)
         user = self.create_user(email,password,**extra_fields)
         return user
 
     def create_superuser(self,email,password,**extra_fields):
         """"Create a superuser with email and password"""
-        superadmin_role = importlib.import_module('user_account.models').User.Role.ADMIN
+        superadmin_role = importlib.import_module('users.models').User.Role.ADMIN
         extra_fields.setdefault('role',superadmin_role)
         extra_fields.setdefault('is_staff',True)
         extra_fields.setdefault('is_superuser',True)
