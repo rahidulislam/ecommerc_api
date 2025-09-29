@@ -18,7 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id','name', 'slug', 'description', 'price', 'stock', 'help_text', 'image', )
+        fields = ('id','name', 'slug', 'description', 'price', 'stock', 'image', )
         read_only_fields = ['created_at', 'updated_at', 'in_stock'] 
     # def to_representation(self, instance):
     #     data = super().to_representation(instance)
