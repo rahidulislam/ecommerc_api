@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from product.models import Category, Product
-from product.serializers import CategorySerializer, ProductSerializer
+from product.serializers import CategorySerializerList, CategorySerializerRetrive, CategorySerializerCreate, ProductSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -11,12 +11,23 @@ class CategoryViewSet(viewsets.ModelViewSet):
         .select_related("parent")
         .prefetch_related("children")
     )
-    serializer_class = CategorySerializer
     lookup_field = "slug"
     http_method_names = [
         "get",
         "post",
+        "patch",
+        "delete"
     ]
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.action in ["create", "partial_update"]:
+            self.serializer_class = CategorySerializerCreate
+        elif self.action == "list":
+            self.serializer_class = CategorySerializerList
+        elif self.action == "retrieve":
+            self.serializer_class = CategorySerializerRetrive
+        return super().get_serializer_class()
+
 
     def get_object(self):
         return get_object_or_404(Category, slug=self.kwargs["slug"])
@@ -25,8 +36,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(
+            {"detail": f"{instance} category is deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class ProductViewSet(viewsets.ModelViewSet):
@@ -36,6 +54,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     http_method_names = [
         "get",
         "post",
+        "patch",
+        "delete"
     ]
 
     def get_queryset(self):
@@ -45,9 +65,20 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category__id=category_id)
         return queryset
 
+    def get_object(self):
+        return get_object_or_404(Product, slug=self.kwargs["slug"])
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(
+            {"detail": f"{instance} product is deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
