@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from product.models import Category, Product
 from product.serializers import CategorySerializerList, CategorySerializerRetrive, CategorySerializerCreate, ProductSerializer
-
+from product.filters import ProductFilter
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = (
@@ -50,6 +50,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filterset_class = ProductFilter
     lookup_field = "slug"
     http_method_names = [
         "get",

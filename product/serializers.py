@@ -26,7 +26,7 @@ class CategorySerializerList(CategorySerializerBase):
     def get_children(self, obj):
         children = obj.children.filter(is_active=True)
         if obj.children.exists():
-            return CategorySerializerBase(children, many=True).data
+            return CategorySerializerList(children, many=True).data
         return []
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -65,13 +65,14 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "slug",
             "description",
+            "category",
             "price",
             "stock",
             "image",
+            "in_stock",
         )
-        read_only_fields = ["created_at", "updated_at", "in_stock"]
 
-    # def to_representation(self, instance):
-    #     data = super().to_representation(instance)
-    #     data['category'] = CategorySerializer(instance.category, many=True).data
-    #     return data
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['category'] = CategorySerializerBase(instance.category).data
+        return data
