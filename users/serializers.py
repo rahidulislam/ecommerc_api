@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from users.models import User
 
@@ -22,6 +23,10 @@ class UserSerializerBase(serializers.ModelSerializer):
     def validate(self, data):
         if data["password"] != data["password2"]:
             raise serializers.ValidationError("Passwords do not match.")
+        try:
+            validate_password(data["password"])
+        except serializers.ValidationError as e:
+            raise serializers.ValidationError({"password": list(e.messages)}) from e
         return data
 
 

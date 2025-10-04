@@ -17,8 +17,6 @@ class CustomerRegistrationViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
     http_method_names = [
         "post",
-        "head",
-        "options",
     ]  # Limit to only POST method for registration
 
     def create(self, request, *args, **kwargs):

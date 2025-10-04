@@ -90,7 +90,7 @@ class ProductSerializer(serializers.ModelSerializer):
     Serializer for the Product model.
     Serializes all product fields and includes category details in the output.
     """
-
+    in_stock = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = (
@@ -104,7 +104,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "image",
             "in_stock",
         )
-
+    def get_in_stock(self, obj):
+        return obj.stock > 0
     def to_representation(self, instance):
         data = super().to_representation(instance)
         data["category"] = CategorySerializerBase(instance.category).data
