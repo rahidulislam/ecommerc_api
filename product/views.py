@@ -2,22 +2,39 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from product.models import Category, Product
-from product.serializers import CategorySerializerList, CategorySerializerRetrive, CategorySerializerCreate, ProductSerializer
+from product.serializers import (
+    CategorySerializerList,
+    CategorySerializerRetrive,
+    CategorySerializerCreate,
+    ProductSerializer,
+)
 from product.filters import ProductFilter
 
+
 class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing product categories.
+
+    Provides CRUD operations for Category objects, supporting:
+    - Listing top-level active categories (with children prefetch)
+    - Creating new categories
+    - Retrieving, updating, and deleting categories by slug
+    - Uses different serializers for create, list, and retrieve actions
+
+    Methods:
+        get_serializer_class: Returns the appropriate serializer class based on the action.
+        get_object: Retrieves a Category instance by slug.
+        create: Handles creation of a new category.
+        destroy: Deletes a category and returns a custom response message.
+    """
+
     queryset = (
         Category.objects.filter(parent__isnull=True, is_active=True)
         .select_related("parent")
         .prefetch_related("children")
     )
     lookup_field = "slug"
-    http_method_names = [
-        "get",
-        "post",
-        "patch",
-        "delete"
-    ]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     def get_serializer_class(self, *args, **kwargs):
         if self.action in ["create", "partial_update"]:
@@ -28,7 +45,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
             self.serializer_class = CategorySerializerRetrive
         return super().get_serializer_class()
 
-
     def get_object(self):
         return get_object_or_404(Category, slug=self.kwargs["slug"])
 
@@ -38,6 +54,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
@@ -52,12 +69,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
     lookup_field = "slug"
-    http_method_names = [
-        "get",
-        "post",
-        "patch",
-        "delete"
-    ]
+    http_method_names = ["get", "post", "patch", "delete"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
