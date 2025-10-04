@@ -56,9 +56,9 @@ class Product(TimeStamp):
         ]
     def __str__(self):
         return self.name
-    
-    def in_stock(self):
-        return self.stock > 0
+    # @property
+    # def in_stock(self):
+    #     return self.stock > 0
 
     def get_absolute_url(self):
         return reverse('product-detail', kwargs={'slug': self.slug})
