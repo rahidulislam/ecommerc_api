@@ -3,6 +3,10 @@ from product.models import Category, Product
 
 
 class CategorySerializerBase(serializers.ModelSerializer):
+    """
+    Base serializer for the Category model.
+    Provides basic fields and write-only parent for use in other category serializers.
+    """
     class Meta:
         model = Category
         fields = (
@@ -17,6 +21,10 @@ class CategorySerializerBase(serializers.ModelSerializer):
         }
 
 class CategorySerializerList(CategorySerializerBase):
+    """
+    Serializer for listing categories.
+    Includes children (recursively) and product count for each category.
+    """
     children = serializers.SerializerMethodField()
     product_count = serializers.IntegerField(source='products.count', read_only=True)
     class Meta(CategorySerializerBase.Meta):
@@ -43,6 +51,10 @@ class CategorySerializerList(CategorySerializerBase):
     #     return data
 
 class CategorySerializerRetrive(CategorySerializerList):
+    """
+    Serializer for retrieving a single category.
+    Adds parent category details to the representation if present.
+    """
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if instance.parent is not None:
@@ -50,6 +62,10 @@ class CategorySerializerRetrive(CategorySerializerList):
         return data
 
 class CategorySerializerCreate(CategorySerializerBase):
+    """
+    Serializer for creating a category.
+    Adds parent category details to the representation if present.
+    """
     def to_representation(self, instance):
         data = super().to_representation(instance)
         if instance.parent is not None:
@@ -58,6 +74,10 @@ class CategorySerializerCreate(CategorySerializerBase):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Product model.
+    Serializes all product fields and includes category details in the output.
+    """
     class Meta:
         model = Product
         fields = (
