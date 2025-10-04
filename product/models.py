@@ -1,6 +1,8 @@
 from django.db import models
+from django.urls import reverse
 from ecommerce_api.base_model import TimeStamp
 from django.core.validators import MinValueValidator
+
 # Create your models here.
 class Category(TimeStamp):
     """
@@ -22,6 +24,22 @@ class Category(TimeStamp):
         return self.name
     
 class Product(TimeStamp):
+    """
+    Represents a product in the e-commerce platform.
+
+    Fields:
+        name: The name of the product.
+        slug: URL-friendly unique identifier for the product.
+        description: Detailed description of the product.
+        price: Price of the product (must be non-negative).
+        stock: Number of items available in stock (must be non-negative).
+        category: Foreign key to the Category the product belongs to.
+        image: Optional image of the product.
+
+    Methods:
+        __str__: Returns the product's name.
+        in_stock: Returns True if the product is in stock, False otherwise.
+    """
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, help_text="URL friendly name")
     description = models.TextField()
@@ -41,3 +59,6 @@ class Product(TimeStamp):
     
     def in_stock(self):
         return self.stock > 0
+
+    def get_absolute_url(self):
+        return reverse('product-detail', kwargs={'slug': self.slug})
