@@ -65,6 +65,21 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing products in the e-commerce API.
+
+    Provides CRUD operations for Product objects, supporting:
+    - Listing all products, with optional filtering by category
+    - Creating new products
+    - Retrieving, updating, and deleting products by slug
+    - Uses a custom filterset for advanced filtering
+
+    Methods:
+        get_queryset: Optionally filters products by category ID from query params.
+        get_object: Retrieves a Product instance by slug.
+        create: Handles creation of a new product.
+        destroy: Deletes a product and returns a custom response message.
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filterset_class = ProductFilter
