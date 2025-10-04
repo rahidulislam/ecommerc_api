@@ -33,5 +33,5 @@ class CartItem(TimeStamp):
         return f"{self.quantity} of {self.product.name} in cart {self.cart.id}"
     
     @property
-    def total_price(self):
+    def total_amount(self):
         return self.quantity * self.product.price
