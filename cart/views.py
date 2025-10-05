@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from cart.models import CartItem
 from cart.serializers import CartItemSerializer, AddToCartSerializer, UpdateCartItemSerializer
-from cart.services import CartSerice
+from cart.services import CartService
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 
@@ -33,18 +33,28 @@ class CartItemViewSet(viewsets.ModelViewSet):
             return AddToCartSerializer
         return super().get_serializer_class()
 
-    def get_queryset(self):
-        cart = CartSerice.get_or_create_cart(self.request)
-        return self.queryset.filter(cart=cart)
+    def list(self, request, *args, **kwargs):
+        cart = CartService.get_or_create_cart(self.request)
+        # Check if merge happened and get warnings
+        # We can store warnings in session during merge
+        merge_warnings = request.session.pop("cart_merge_warnings", [])
+        serailizer = self.get_serializer(cart.items.all(), many=True)
+        response_data = {
+            "items": serailizer.data,
+            "total_items": len(serailizer.data),
+            "total_price": cart.total_price,
+            "merge_warnings": merge_warnings,
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         serializer = AddToCartSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        cart = CartSerice.get_or_create_cart(self.request)
+        cart = CartService.get_or_create_cart(self.request)
         product_id = serializer.validated_data["product_id"]
         quantity = serializer.validated_data["quantity"]
         try:
-            item = CartSerice.add_item(cart, product_id, quantity)
+            item = CartService.add_item(cart, product_id, quantity)
             item_serializer = CartItemSerializer(item)
             return Response(item_serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as e:
@@ -56,7 +66,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         quantity = serializer.validated_data.get("quantity", instance.quantity)
         try:
-            item = CartSerice.update_item(instance, quantity)
+            item = CartService.update_item(instance, quantity)
             item_serializer = CartItemSerializer(item)
             return Response(item_serializer.data, status=status.HTTP_200_OK)
         except ValidationError as e:
@@ -65,7 +75,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         try:
-            CartSerice.remove_item(instance)
+            CartService.remove_item(instance)
             return Response(
                 {"details": "Item removed from cart."},
                 status=status.HTTP_204_NO_CONTENT,

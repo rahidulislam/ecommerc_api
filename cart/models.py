@@ -14,7 +14,7 @@ class Cart(TimeStamp):
     
     @property
     def total_price(self):
-        return sum(item.total_price for item in self.items.all())
+        return sum(item.total_amount for item in self.items.all())
     
 
 class CartItem(TimeStamp):
