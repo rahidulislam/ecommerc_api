@@ -60,6 +60,7 @@ LOCAL_APPS = [
     "core",
     "product",
     "cart",
+    "order",
 ]
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
