@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
+import os,stripe
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +30,7 @@ SECRET_KEY = "django-insecure-k)71dv=eg_!k9yn@*t*vow-3&a8c%%amk5!aiafua17x-*mnmj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -54,6 +58,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.facebook",
     "django_filters",
+    "storages",
 ]
 LOCAL_APPS = [
     "users",
@@ -227,3 +232,17 @@ SIMPLE_JWT = {
 }
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Stripe Settings
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+# Stripe
+stripe.api_key = STRIPE_SECRET_KEY
+
+# Use S3 as the default file storage
+DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = 'zappa-h7e7jfd6p'
+AWS_S3_REGION_NAME = 'us-east-1'  # আপনার bucket এর region
+

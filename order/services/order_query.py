@@ -36,3 +36,9 @@ class OrderQueryService:
             return orders.get(id=order_id)
         except Order.DoesNotExist as e:
             raise ValidationError("Order not found") from e
+    @staticmethod
+    def get_order_by_email(request, email):
+        try:
+            return Order.objects.filter(guest_email=email).first()
+        except Order.DoesNotExist as e:
+            raise ValidationError("Order not found") from e
